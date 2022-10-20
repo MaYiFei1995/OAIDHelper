@@ -9,24 +9,27 @@ import com.mai.oaid.helper.OAIDError;
 import com.mai.oaid.helper.system.base.BaseIInterface;
 
 /**
- * 华为、荣耀 (Huawei、Honor)
+ * Google
  */
-@SuppressWarnings("unused")
-public class HWIInterface extends BaseIInterface {
+public class GmsIInterface extends BaseIInterface {
 
-    private static final String DESCRIPTOR = "com.uodis.opendevice.aidl.OpenDeviceIdentifierService";
+    private static final String DESCRIPTOR = "com.google.android.gms.ads.identifier.internal.IAdvertisingIdService";
 
-    public HWIInterface(IBinder iBinder) {
+    public GmsIInterface(IBinder iBinder) {
         super(iBinder);
     }
 
     @Override
     public boolean isSupport() throws RemoteException {
-        return isOaidTrackLimited();
+        return isLimitAdTrackingEnabled(true);
     }
 
     @Override
     public Pair<String, OAIDError> getOAID() throws RemoteException {
+        return getId();
+    }
+
+    private Pair<String, OAIDError> getId() throws RemoteException {
         Parcel _data = Parcel.obtain();
         Parcel _reply = Parcel.obtain();
         try {
@@ -38,26 +41,27 @@ public class HWIInterface extends BaseIInterface {
             _reply.readException();
             return new Pair<>(_reply.readString(), null);
         } finally {
-            _data.recycle();
             _reply.recycle();
+            _data.recycle();
         }
     }
 
-    public boolean isOaidTrackLimited() throws RemoteException {
+    public boolean isLimitAdTrackingEnabled(boolean bool) throws RemoteException {
         Parcel _data = Parcel.obtain();
         Parcel _reply = Parcel.obtain();
         boolean _result;
         try {
             _data.writeInterfaceToken(DESCRIPTOR);
+            _data.writeInt(bool ? 1 : 0);
             boolean _status = this.iBinder.transact(2, _data, _reply, 0);
             if (!_status) {
-                return true;
+                return false;
             }
             _reply.readException();
-            _result = _reply.readInt() == 0;
+            _result = _reply.readInt() != 0;
         } finally {
-            _data.recycle();
             _reply.recycle();
+            _data.recycle();
         }
         return _result;
     }

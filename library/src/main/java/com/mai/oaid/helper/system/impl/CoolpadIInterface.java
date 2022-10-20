@@ -3,7 +3,9 @@ package com.mai.oaid.helper.system.impl;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.util.Pair;
 
+import com.mai.oaid.helper.OAIDError;
 import com.mai.oaid.helper.system.base.BaseIInterface;
 
 /**
@@ -18,6 +20,11 @@ public class CoolpadIInterface extends BaseIInterface {
     public CoolpadIInterface(IBinder iBinder, String packageName) {
         super(iBinder);
         this.packageName = packageName;
+    }
+
+    @Override
+    public boolean isSupport() throws RemoteException {
+        return true;
     }
 
     public String getUDID() throws RemoteException {
@@ -41,21 +48,23 @@ public class CoolpadIInterface extends BaseIInterface {
     }
 
     @Override
-    public String getOAID() throws RemoteException {
+    public Pair<String, OAIDError> getOAID() throws RemoteException {
         Parcel _data = Parcel.obtain();
         Parcel _reply = Parcel.obtain();
         String _result;
         try {
             _data.writeInterfaceToken(DESCRIPTOR);
             _data.writeString(packageName);
-            this.iBinder.transact(2, _data, _reply, 0);
+            boolean _status = this.iBinder.transact(2, _data, _reply, 0);
+            if (!_status) {
+                return new Pair<>(null, OAIDError.STATUS_ERROR);
+            }
             _reply.readException();
-            _result = _reply.readString();
+            return new Pair<>(_reply.readString(), null);
         } finally {
             _data.recycle();
             _reply.recycle();
         }
-        return _result;
     }
 
     public String getVAID() throws RemoteException {

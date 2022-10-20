@@ -3,18 +3,24 @@ package com.mai.oaid.helper.system.impl;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.util.Pair;
 
+import com.mai.oaid.helper.OAIDError;
 import com.mai.oaid.helper.system.base.BaseIInterface;
 
+/**
+ * 中兴、HTC、Moto等
+ */
 @SuppressWarnings("unused")
-public class ZTEIInterface extends BaseIInterface {
+public class MSAIInterface extends BaseIInterface {
 
     public static final String DESCRIPTOR = "com.bun.lib.MsaIdInterface";
 
-    public ZTEIInterface(IBinder iBinder) {
+    public MSAIInterface(IBinder iBinder) {
         super(iBinder);
     }
 
+    @Override
     public boolean isSupport() throws RemoteException {
         Parcel _data = Parcel.obtain();
         Parcel _reply = Parcel.obtain();
@@ -51,7 +57,7 @@ public class ZTEIInterface extends BaseIInterface {
     }
 
     @Override
-    public String getOAID() throws RemoteException {
+    public Pair<String, OAIDError> getOAID() throws RemoteException {
         Parcel _data = Parcel.obtain();
         Parcel _reply = Parcel.obtain();
         String _result;
@@ -59,15 +65,14 @@ public class ZTEIInterface extends BaseIInterface {
             _data.writeInterfaceToken(DESCRIPTOR);
             boolean _status = this.iBinder.transact(3, _data, _reply, 0);
             if (!_status) {
-                return "";
+                return new Pair<>(null, OAIDError.STATUS_ERROR);
             }
             _reply.readException();
-            _result = _reply.readString();
+            return new Pair<>(_reply.readString(), null);
         } finally {
             _data.recycle();
             _reply.recycle();
         }
-        return _result;
     }
 
     public String getVAID() throws RemoteException {

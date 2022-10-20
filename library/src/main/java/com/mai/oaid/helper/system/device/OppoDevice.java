@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.os.IBinder;
 import android.util.Log;
 import android.util.Pair;
@@ -12,18 +14,20 @@ import android.util.Pair;
 import com.mai.oaid.helper.OAIDError;
 import com.mai.oaid.helper.system.base.BaseDevice;
 import com.mai.oaid.helper.system.base.BaseIInterface;
-import com.mai.oaid.helper.system.impl.CoolpadIInterface;
+import com.mai.oaid.helper.system.impl.OPPOIInterface;
 
+import java.security.MessageDigest;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * 酷派 (Coolpad)
+ * oppo、realme、OnePlus
  */
-public class CoolpadDevice implements BaseDevice {
+public class OppoDevice implements BaseDevice {
 
-    private static final String TAG = "CoolpadDeviceIDHelper";
+    private static final String TAG = "OppoDeviceIDHelper";
 
     private final Context context;
+    private String signature;
 
     private final LinkedBlockingQueue<IBinder> iBinderQueue = new LinkedBlockingQueue<>(1);
 
@@ -41,7 +45,7 @@ public class CoolpadDevice implements BaseDevice {
         }
     };
 
-    public CoolpadDevice(Context paramContext) {
+    public OppoDevice(Context paramContext) {
         this.context = paramContext;
     }
 
@@ -51,10 +55,10 @@ public class CoolpadDevice implements BaseDevice {
             return false;
         }
         try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo("com.coolpad.deviceidsupport", 0);
+            PackageInfo pi = context.getPackageManager().getPackageInfo("com.heytap.openid", 0);
             return pi != null;
         } catch (Exception e) {
-            Log.w(TAG, e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -62,14 +66,14 @@ public class CoolpadDevice implements BaseDevice {
     @Override
     public Pair<String, OAIDError> getOAID() throws Exception {
         Intent intent = new Intent();
-        ComponentName componentName = new ComponentName("com.coolpad.deviceidsupport", "com.coolpad.deviceidsupport.DeviceIdService");
-        intent.setComponent(componentName);
+        intent.setAction("action.com.heytap.openid.OPEN_ID_SERVICE");
+        intent.setComponent(new ComponentName("com.heytap.openid", "com.heytap.openid.IdentifyService"));
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {
             try {
                 IBinder iBinder = this.iBinderQueue.take();
-                BaseIInterface getter = new CoolpadIInterface(iBinder, context.getPackageName());
-                return getter.getOAID();
+                BaseIInterface getter = new OPPOIInterface(iBinder);
+                return getter.getSerID(this.context.getPackageName(), getAppSignatureSha1(), "OUID");
             } finally {
                 this.context.unbindService(this.conn);
             }
@@ -77,6 +81,26 @@ public class CoolpadDevice implements BaseDevice {
             Log.e(TAG, "bindService return false");
             return new Pair<>(null, OAIDError.SERVICE_ERROR);
         }
+    }
+
+    private String getAppSignatureSha1() {
+        if (signature == null || signature.length() == 0) {
+            try {
+                Signature[] arrayOfSignature = (this.context.getPackageManager().getPackageInfo(this.context.getPackageName(), PackageManager.GET_SIGNATURES)).signatures;
+                if (arrayOfSignature != null && arrayOfSignature.length > 0) {
+                    byte[] arrayOfByte1 = arrayOfSignature[0].toByteArray();
+                    MessageDigest messageDigest = MessageDigest.getInstance("SHA1");
+                    byte[] arrayOfByte2 = messageDigest.digest(arrayOfByte1);
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (byte b : arrayOfByte2)
+                        stringBuilder.append(Integer.toHexString(b & 0xFF | 0x100), 1, 3);
+                    signature = stringBuilder.toString();
+                }
+            } catch (Throwable tr) {
+                Log.e(TAG, "getAppSignatureSha1", tr);
+            }
+        }
+        return signature;
     }
 
 }

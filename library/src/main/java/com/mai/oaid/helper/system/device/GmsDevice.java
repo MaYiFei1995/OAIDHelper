@@ -12,16 +12,16 @@ import android.util.Pair;
 import com.mai.oaid.helper.OAIDError;
 import com.mai.oaid.helper.system.base.BaseDevice;
 import com.mai.oaid.helper.system.base.BaseIInterface;
-import com.mai.oaid.helper.system.impl.CoolpadIInterface;
+import com.mai.oaid.helper.system.impl.GmsIInterface;
 
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * 酷派 (Coolpad)
+ * Google
  */
-public class CoolpadDevice implements BaseDevice {
+public class GmsDevice implements BaseDevice {
 
-    private static final String TAG = "CoolpadDeviceIDHelper";
+    private static final String TAG = "GmsDeviceIDHelper";
 
     private final Context context;
 
@@ -41,7 +41,7 @@ public class CoolpadDevice implements BaseDevice {
         }
     };
 
-    public CoolpadDevice(Context paramContext) {
+    public GmsDevice(Context paramContext) {
         this.context = paramContext;
     }
 
@@ -51,10 +51,10 @@ public class CoolpadDevice implements BaseDevice {
             return false;
         }
         try {
-            PackageInfo pi = context.getPackageManager().getPackageInfo("com.coolpad.deviceidsupport", 0);
+            PackageInfo pi = context.getPackageManager().getPackageInfo("com.android.vending", 0);
             return pi != null;
         } catch (Exception e) {
-            Log.w(TAG, e);
+            e.printStackTrace();
             return false;
         }
     }
@@ -62,13 +62,17 @@ public class CoolpadDevice implements BaseDevice {
     @Override
     public Pair<String, OAIDError> getOAID() throws Exception {
         Intent intent = new Intent();
-        ComponentName componentName = new ComponentName("com.coolpad.deviceidsupport", "com.coolpad.deviceidsupport.DeviceIdService");
-        intent.setComponent(componentName);
+        intent.setAction("com.google.android.gms.ads.identifier.service.START");
+        intent.setPackage("com.google.android.gms");
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {
             try {
                 IBinder iBinder = this.iBinderQueue.take();
-                BaseIInterface getter = new CoolpadIInterface(iBinder, context.getPackageName());
+                BaseIInterface getter = new GmsIInterface(iBinder);
+                if (!getter.isSupport()) {
+                    Log.e(TAG, "is not support");
+                    return new Pair<>(null, OAIDError.NOT_SUPPORT);
+                }
                 return getter.getOAID();
             } finally {
                 this.context.unbindService(this.conn);

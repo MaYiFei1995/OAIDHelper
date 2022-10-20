@@ -1,14 +1,15 @@
 package com.mai.oaid.helper;
 
-import android.content.Context;
-import android.text.TextUtils;
+import android.app.Application;
+import android.util.Log;
+import android.util.Pair;
 
 import com.mai.oaid.helper.sdk.OAIDSdkHelper;
 import com.mai.oaid.helper.sdk.OAIDSdkHelper25;
 import com.mai.oaid.helper.system.OAIDSystemHelper;
 import com.mai.oaid.helper.utils.StringUtil;
 
-public class OAIDHelper implements OAIDCallback {
+public class OAIDHelper {
 
     private static class InstanceHolder {
         private static final OAIDHelper holder = new OAIDHelper();
@@ -18,29 +19,124 @@ public class OAIDHelper implements OAIDCallback {
         return InstanceHolder.holder;
     }
 
+    private boolean isUseSdk = true;
+    private Application context;
+    private InitListener initListener;
+    private boolean isInit;
+
     private String oaid;
 
-    public void init(Context context) {
-        if (context == null) {
-            return;
-        }
-        try {
-            if (OAIDSdkHelper.isSupport()) {
-                OAIDSdkHelper.getOAID(context, this);
-            } else if (OAIDSdkHelper25.isSupport()) {
-                OAIDSdkHelper25.getOAID(context, this);
-            }
-        } catch (Throwable ignore) {
-
-        }
-        OAIDSystemHelper.tryGetOaid(context, this);
+    /**
+     * 是否优先使用OAID-SDK获取OAID
+     * 需要调用 {@link #init(Application, InitListener)} 方法前配置
+     *
+     * @param isUseSdk 默认使用
+     */
+    public void isUseSdk(boolean isUseSdk) {
+        this.isUseSdk = isUseSdk;
     }
 
-    @Override
-    public synchronized void onResult(String oaid) {
-        if (StringUtil.isNotEmpty(oaid) && TextUtils.isEmpty(this.oaid)) {
-            this.oaid = oaid;
+    public void init(Application application, InitListener initListener) {
+        if (context == null || isInit) {
+            return;
         }
+        this.context = application;
+        synchronized (OAIDHelper.class) {
+            if (!isInit) {
+                try {
+                    if (isUseSdk) {
+                        RetListener sdkListener = oaid -> {
+                            // SDK获取优先
+                            if (StringUtil.isNotEmpty(oaid)) {
+                                OAIDHelper.this.oaid = oaid;
+                                if (initListener != null) {
+                                    initListener.onSuccess(OAIDHelper.this.oaid);
+                                    clear();
+                                }
+                            } else {
+                                // SDK获取失败，尝试通过系统获取
+                                tryGetOAID();
+                            }
+                        };
+                        if (OAIDSdkHelper.isSupport()) {
+                            // SDK 1.0.26-2.0.0
+                            OAIDSdkHelper.getOAID(context.getApplicationContext(), sdkListener);
+                            return;
+                        } else if (OAIDSdkHelper25.isSupport()) {
+                            // SDK 1.0.25
+                            OAIDSdkHelper25.getOAID(context.getApplicationContext(), sdkListener);
+                            return;
+                        }
+                    }
+                    // SDK环境错误或不开始SDK时，尝试通过系统获取
+                    tryGetOAID();
+                } catch (Throwable tr) {
+                    Log.e("OAIDHelper", "init error", tr);
+                    if (initListener != null) {
+                        initListener.onFailure(OAIDError.UNKNOWN_ERROR);
+                    }
+                }
+            }
+            isInit = true;
+        }
+    }
+
+    private void tryGetOAID() {
+        // 通过系统获取OAID
+        Pair<String, OAIDError> ret = OAIDSystemHelper.tryGetOaid(context.getApplicationContext());
+        String oaid = ret.first;
+        if (StringUtil.isNotEmpty(oaid)) {
+            this.oaid = oaid;
+            if (initListener != null) {
+                initListener.onSuccess(this.oaid);
+            }
+        } else {
+            if (initListener != null) {
+                initListener.onFailure(ret.second != null ? ret.second : OAIDError.RETURN_EMPTY);
+            }
+        }
+        clear();
+    }
+
+    /**
+     * 初始化成功后，清空缓存
+     */
+    private void clear() {
+        initListener = null;
+        context = null;
+    }
+
+    /**
+     * 获取回调
+     */
+    public interface RetListener {
+
+        /**
+         * 返回
+         *
+         * @param oaid OAID
+         */
+        void onResult(String oaid);
+
+    }
+
+    /**
+     * 初始化回调
+     */
+    public interface InitListener {
+
+        /**
+         * 初始化成功，已获取到OAID
+         */
+        void onSuccess(String oaid);
+
+        /**
+         * 初始化失败，无法获取OAID
+         *
+         * @param error 错误信息
+         */
+        void onFailure(OAIDError error);
+
     }
 
 }

@@ -2,13 +2,11 @@ package com.mai.oaid.helper.system.device;
 
 import android.app.KeyguardManager;
 import android.content.Context;
-import android.os.IBinder;
-import android.os.IInterface;
-import android.os.RemoteException;
 import android.util.Log;
+import android.util.Pair;
 
+import com.mai.oaid.helper.OAIDError;
 import com.mai.oaid.helper.system.base.BaseDevice;
-import com.mai.oaid.helper.system.base.BaseIInterface;
 
 import java.util.Objects;
 
@@ -45,27 +43,17 @@ public class CooseaDevice implements BaseDevice {
     }
 
     @Override
-    public String getOAID() {
-        if (context == null) {
-            return "";
-        }
+    public Pair<String, OAIDError> getOAID() throws Exception {
         if (keyguardManager == null) {
-            Log.w(TAG, "KeyguardManager not found");
-            return "";
+            Log.e(TAG, "KeyguardManager not found");
+            return new Pair<>(null, OAIDError.NOT_SUPPORT);
         }
-        try {
-            Object obj = keyguardManager.getClass().getDeclaredMethod("obtainOaid").invoke(keyguardManager);
-            if (obj == null) {
-                Log.w(TAG, "OAID obtain failed");
-                return "";
-            }
-            String oaid = obj.toString();
-            Log.d(TAG, "OAID obtain success: " + oaid);
-            return oaid;
-        } catch (Exception e) {
-            e.printStackTrace();
+        Object obj = keyguardManager.getClass().getDeclaredMethod("obtainOaid").invoke(keyguardManager);
+        if (obj == null) {
+            Log.e(TAG, "OAID obtain failed");
+            return new Pair<>(null, OAIDError.SERVICE_ERROR);
         }
-        return "";
+        return new Pair<>(obj.toString(), null);
     }
 
 }
