@@ -36,8 +36,8 @@ public class HWDevice implements BaseDevice {
             try {
                 Log.d(TAG, "onServiceConnected");
                 iBinderQueue.put(param1IBinder);
-            } catch (Throwable t) {
-                Log.d(TAG, "conn", t);
+            } catch (Throwable tr) {
+                Log.d(TAG, "conn", tr);
             }
         }
 

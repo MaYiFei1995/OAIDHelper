@@ -4,6 +4,9 @@ import android.app.Application;
 import android.util.Log;
 import android.util.Pair;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.mai.oaid.helper.sdk.OAIDSdkHelper;
 import com.mai.oaid.helper.sdk.OAIDSdkHelper25;
 import com.mai.oaid.helper.system.OAIDSystemHelper;
@@ -24,7 +27,7 @@ public class OAIDHelper {
     private InitListener initListener;
     private boolean isInit;
 
-    private String oaid;
+    private String oaid = null;
 
     /**
      * 是否优先使用OAID-SDK获取OAID
@@ -32,15 +35,20 @@ public class OAIDHelper {
      *
      * @param isUseSdk 默认使用
      */
-    public void isUseSdk(boolean isUseSdk) {
+    public OAIDHelper useSdk(boolean isUseSdk) {
         this.isUseSdk = isUseSdk;
+        return this;
     }
 
-    public void init(Application application, InitListener initListener) {
-        if (context == null || isInit) {
+    /**
+     * 初始化
+     */
+    public void init(@NonNull Application application, @Nullable InitListener initListener) {
+        if (isInit) {
             return;
         }
         this.context = application;
+        this.initListener = initListener;
         synchronized (OAIDHelper.class) {
             if (!isInit) {
                 try {
@@ -79,6 +87,14 @@ public class OAIDHelper {
             }
             isInit = true;
         }
+    }
+
+    /**
+     * 获取OAID，可能为空
+     */
+    @Nullable
+    public String getOaid() {
+        return this.oaid;
     }
 
     private void tryGetOAID() {

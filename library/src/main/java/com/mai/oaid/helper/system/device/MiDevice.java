@@ -41,7 +41,7 @@ public class MiDevice implements BaseDevice {
     public Pair<String, OAIDError> getOAID() {
         try {
             Method method = idProviderClass.getMethod("getOAID", Context.class);
-            return new Pair<>((String) method.invoke(idProviderClass, new Object[]{this.context}), null);
+            return new Pair<>((String) method.invoke(idProviderImpl, new Object[]{this.context}), null);
         } catch (Throwable tr) {
             Log.e(TAG, "unknwon error", tr);
             return new Pair<>(null, OAIDError.UNKNOWN_ERROR);
