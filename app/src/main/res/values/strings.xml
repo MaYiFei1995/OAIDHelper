@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OAIDHelper</string>
+    <string name="get">获取OAID</string>
 </resources>
