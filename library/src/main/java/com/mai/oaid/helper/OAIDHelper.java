@@ -102,6 +102,12 @@ public class OAIDHelper {
         Pair<String, OAIDError> ret = OAIDSystemHelper.tryGetOaid(context.getApplicationContext());
         String oaid = ret.first;
         if (StringUtil.isNotEmpty(oaid)) {
+            if (oaid.equals("00000000-0000-0000-0000-000000000000")) {
+                if (initListener != null) {
+                    initListener.onFailure(OAIDError.LIMITED);
+                    return;
+                }
+            }
             this.oaid = oaid;
             if (initListener != null) {
                 initListener.onSuccess(this.oaid);

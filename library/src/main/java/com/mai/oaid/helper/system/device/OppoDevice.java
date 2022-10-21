@@ -65,8 +65,7 @@ public class OppoDevice implements BaseDevice {
 
     @Override
     public Pair<String, OAIDError> getOAID() throws Exception {
-        Intent intent = new Intent();
-        intent.setAction("action.com.heytap.openid.OPEN_ID_SERVICE");
+        Intent intent = new Intent("action.com.heytap.openid.OPEN_ID_SERVICE");
         intent.setComponent(new ComponentName("com.heytap.openid", "com.heytap.openid.IdentifyService"));
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {

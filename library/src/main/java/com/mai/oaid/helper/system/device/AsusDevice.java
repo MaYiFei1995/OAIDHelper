@@ -61,8 +61,7 @@ public class AsusDevice implements BaseDevice {
 
     @Override
     public Pair<String, OAIDError> getOAID() throws Exception {
-        Intent intent = new Intent();
-        intent.setAction("com.asus.msa.action.ACCESS_DID");
+        Intent intent = new Intent("com.asus.msa.action.ACCESS_DID");
         intent.setComponent(new ComponentName("com.asus.msa.SupplementaryDID", "com.asus.msa.SupplementaryDID.SupplementaryDIDService"));
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {

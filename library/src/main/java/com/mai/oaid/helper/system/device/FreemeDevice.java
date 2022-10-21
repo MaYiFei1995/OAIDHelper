@@ -61,8 +61,7 @@ public class FreemeDevice implements BaseDevice {
 
     @Override
     public Pair<String, OAIDError> getOAID() throws Exception {
-        Intent intent = new Intent();
-        intent.setAction("android.service.action.msa");
+        Intent intent = new Intent("android.service.action.msa");
         intent.setPackage("com.android.creator");
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {

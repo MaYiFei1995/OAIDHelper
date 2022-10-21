@@ -91,8 +91,7 @@ public class HWDevice implements BaseDevice {
             return new Pair<>(null, OAIDError.NOT_SUPPORT);
         }
 
-        Intent intent = new Intent();
-        intent.setAction("com.asus.msa.action.ACCESS_DID");
+        Intent intent = new Intent("com.uodis.opendevice.OPENIDS_SERVICE");
         intent.setPackage(packageName);
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {

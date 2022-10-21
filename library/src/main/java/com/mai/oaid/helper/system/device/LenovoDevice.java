@@ -62,7 +62,6 @@ public class LenovoDevice implements BaseDevice {
     @Override
     public Pair<String, OAIDError> getOAID() throws Exception {
         Intent intent = new Intent();
-        intent.setAction("com.asus.msa.action.ACCESS_DID");
         intent.setClassName("com.zui.deviceidservice", "com.zui.deviceidservice.DeviceidService");
         boolean bool = this.context.bindService(intent, this.conn, Context.BIND_AUTO_CREATE);
         if (bool) {
