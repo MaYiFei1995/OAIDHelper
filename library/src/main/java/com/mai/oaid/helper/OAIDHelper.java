@@ -33,6 +33,10 @@ public class OAIDHelper {
      * 是否优先使用OAID-SDK获取OAID
      * 需要调用 {@link #init(Application, InitListener)} 方法前配置
      *
+     * isUseSdk == true 时，会尝试通过SDK接口获取，返回失败后再尝试调用系统方法获取
+     * 且当SDK版本大于1.0.25时，要确保调用初始化前已按照文档配置证书文件
+     * isUseSdk == false 时，直接尝试调用系统方法获取
+     *
      * @param isUseSdk 默认使用
      */
     public OAIDHelper useSdk(boolean isUseSdk) {
@@ -150,14 +154,14 @@ public class OAIDHelper {
         /**
          * 初始化成功，已获取到OAID
          */
-        void onSuccess(String oaid);
+        void onSuccess(@Nullable String oaid);
 
         /**
          * 初始化失败，无法获取OAID
          *
          * @param error 错误信息
          */
-        void onFailure(OAIDError error);
+        void onFailure(@NonNull OAIDError error);
 
     }
 

@@ -1,5 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.mai.oaid.helper">
+    <!-- asus -->
+    <uses-permission android:name="com.asus.msa.SupplementaryDID.ACCESS" />
+    <!-- freeme -->
+    <uses-permission android:name="freemme.permission.msa" />
+
+    <!-- Not recommend using QUERY_ALL_PACKAGES. Use queries Instead. -->
+    <!-- <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" /> -->
+    <queries>
+        <!-- google -->
+        <package android:name="com.google.android.gms" />
+        <package android:name="com.android.vending" />
+        <!-- freeme -->
+        <package android:name="com.android.creator" />
+        <!-- zte -->
+        <package android:name="com.mdid.msa" />
+        <!-- samsung -->
+        <package android:name="com.samsung.android.deviceidservice" />
+        <!-- coolpad -->
+        <package android:name="com.coolpad.deviceidsupport" />
+        <!-- oppo -->
+        <package android:name="com.heytap.openid" />
+        <!-- huawei -->
+        <package android:name="com.huawei.hwid" />
+        <package android:name="com.huawei.hwid.tv" />
+        <package android:name="com.huawei.hms" />
+        <!-- asus -->
+        <package android:name="com.asus.msa.SupplementaryDID" />
+        <!-- lenovo -->
+        <package android:name="com.zui.deviceidservice" />
+    </queries>
 
 </manifest>
