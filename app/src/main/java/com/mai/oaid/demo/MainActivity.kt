@@ -37,9 +37,9 @@ class MainActivity : AppCompatActivity() {
                 setText("OAID: $oaid")
             }
 
-            override fun onFailure(error: OAIDError?) {
+            override fun onFailure(error: OAIDError) {
                 Log.e("Mai", "on init oaid error: $error")
-                val str = "<font color=\"#FF0000\">OAID: ${error?.errMsg}</font>"
+                val str = "<font color=\"#FF0000\">OAID: ${error.errMsg}</font>"
                 setText(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         Html.fromHtml(str, Html.FROM_HTML_MODE_COMPACT)
