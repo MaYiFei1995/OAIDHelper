@@ -33,12 +33,12 @@ class MainActivity : AppCompatActivity() {
         OAIDHelper.get().useSdk(true).init(application, object : OAIDHelper.InitListener {
 
             override fun onSuccess(oaid: String?) {
-                Log.e("MaiTest", "on init oaid success: $oaid")
+                Log.e("Mai", "on init oaid success: $oaid")
                 setText("OAID: $oaid")
             }
 
             override fun onFailure(error: OAIDError?) {
-                Log.e("MaiTest", "on init oaid error: $error")
+                Log.e("Mai", "on init oaid error: $error")
                 val str = "<font color=\"#FF0000\">OAID: ${error?.errMsg}</font>"
                 setText(
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
