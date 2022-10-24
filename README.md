@@ -106,3 +106,7 @@ public interface InitListener {
     })
 ```
 
+## 感谢
+
++ [gzu-liyujiang/Android_CN_OAID](https://github.com/gzu-liyujiang/Android_CN_OAID)
++ [OpenMico/MicoLauncher](https://github.com/OpenMico/MicoLauncher)
