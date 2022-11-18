@@ -40,7 +40,7 @@ public class OAIDSdkHelper25 {
     @SuppressLint("ObsoleteSdkInt")
     public static boolean isSupport() {
         if (Build.VERSION.SDK_INT < 21) {
-            sGetOaidFail = false;
+            sGetOaidFail = true;
         } else {
             try {
                 IIdentifierListener iIdentifierListener = (b, idSupplier) -> {
@@ -49,17 +49,17 @@ public class OAIDSdkHelper25 {
                 iIdentifierListener.OnSupport(true, null);
                 try {
                     Class.forName("com.bun.miitmdid.core.MdidSdkHelper", false, OAIDSdkHelper25.class.getClassLoader());
-                    sGetOaidFail = true;
+                    sGetOaidFail = false;
                 } catch (Throwable tr) {
                     Log.i(TAG, "OAIDSdkHelper25:com.bun.miitmdid.core.MdidSdkHelper oaid sdk not find");
-                    sGetOaidFail = false;
+                    sGetOaidFail = true;
                 }
             } catch (Throwable tr2) {
                 Log.i(TAG, "OAIDSdkHelper25:isSupport oaid sdk not find");
-                sGetOaidFail = false;
+                sGetOaidFail = true;
             }
         }
-        return sGetOaidFail;
+        return !sGetOaidFail;
     }
 
     static class IIdentifierListener25 implements IIdentifierListener {

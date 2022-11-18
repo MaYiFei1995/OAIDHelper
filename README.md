@@ -20,7 +20,7 @@ repositories {
 ### 增加依赖
 ```groovy
 rependencies {
-    implementation 'com.github.MaYiFei1995:OAIDHelper:1.1.0'
+    implementation 'com.github.MaYiFei1995:OAIDHelper:1.2.0'
 }
 ```
 
