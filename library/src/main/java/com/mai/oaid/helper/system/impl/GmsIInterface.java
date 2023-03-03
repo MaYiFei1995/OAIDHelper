@@ -21,7 +21,7 @@ public class GmsIInterface extends BaseIInterface {
 
     @Override
     public boolean isSupport() throws RemoteException {
-        return isLimitAdTrackingEnabled(true);
+        return !isLimitAdTrackingEnabled(true);
     }
 
     @Override

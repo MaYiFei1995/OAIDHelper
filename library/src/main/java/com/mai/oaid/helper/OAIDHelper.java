@@ -32,7 +32,7 @@ public class OAIDHelper {
     /**
      * 是否优先使用OAID-SDK获取OAID
      * 需要调用 {@link #init(Application, InitListener)} 方法前配置
-     *
+     * <p>
      * isUseSdk == true 时，会尝试通过SDK接口获取，返回失败后再尝试调用系统方法获取
      * 且当SDK版本大于1.0.25时，要确保调用初始化前已按照文档配置证书文件
      * isUseSdk == false 时，直接尝试调用系统方法获取
@@ -102,26 +102,28 @@ public class OAIDHelper {
     }
 
     private void tryGetOAID() {
-        // 通过系统获取OAID
-        Pair<String, OAIDError> ret = OAIDSystemHelper.tryGetOaid(context.getApplicationContext());
-        String oaid = ret.first;
-        if (StringUtil.isNotEmpty(oaid)) {
-            if (oaid.equals("00000000-0000-0000-0000-000000000000")) {
+        new Thread(() -> {
+            // 通过系统获取OAID
+            Pair<String, OAIDError> ret = OAIDSystemHelper.tryGetOaid(context.getApplicationContext());
+            String oaid = ret.first;
+            if (StringUtil.isNotEmpty(oaid)) {
+                if (oaid.equals("00000000-0000-0000-0000-000000000000")) {
+                    if (initListener != null) {
+                        initListener.onFailure(OAIDError.LIMITED);
+                        return;
+                    }
+                }
+                OAIDHelper.this.oaid = oaid;
                 if (initListener != null) {
-                    initListener.onFailure(OAIDError.LIMITED);
-                    return;
+                    initListener.onSuccess(OAIDHelper.this.oaid);
+                }
+            } else {
+                if (initListener != null) {
+                    initListener.onFailure(ret.second != null ? ret.second : OAIDError.RETURN_EMPTY);
                 }
             }
-            this.oaid = oaid;
-            if (initListener != null) {
-                initListener.onSuccess(this.oaid);
-            }
-        } else {
-            if (initListener != null) {
-                initListener.onFailure(ret.second != null ? ret.second : OAIDError.RETURN_EMPTY);
-            }
-        }
-        clear();
+            clear();
+        }).start();
     }
 
     /**
