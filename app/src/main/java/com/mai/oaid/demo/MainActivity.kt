@@ -13,6 +13,8 @@ import android.provider.Settings
 import android.telephony.TelephonyManager
 import android.text.Html
 import android.util.Log
+import android.view.View.OnLongClickListener
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.mai.oaid.demo.databinding.ActivityMainBinding
@@ -60,8 +62,10 @@ class MainActivity : AppCompatActivity() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                 "IMEI: NOT_SUPPORT"
             } else {
-                if (ActivityCompat.checkSelfPermission(this,
-                        Manifest.permission.READ_PHONE_STATE) ==
+                if (ActivityCompat.checkSelfPermission(
+                        this,
+                        Manifest.permission.READ_PHONE_STATE
+                    ) ==
                     PackageManager.PERMISSION_GRANTED
                 ) {
                     try {
@@ -75,8 +79,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
-        binder.oaid.setOnLongClickListener {
-            val text = binder.oaid.text.toString()
+        binder.uuid.setOnLongClickListener(longClickListener)
+        binder.androidID.setOnLongClickListener(longClickListener)
+        binder.imei.setOnLongClickListener(longClickListener)
+        binder.oaid.setOnLongClickListener(longClickListener)
+    }
+
+    private val longClickListener = OnLongClickListener { v ->
+        return@OnLongClickListener (v is TextView).apply {
+            val text = (v as TextView).text.toString()
             val clipboardManager = getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             clipboardManager.setPrimaryClip(
                 ClipData.newPlainText(
@@ -84,8 +95,7 @@ class MainActivity : AppCompatActivity() {
                     text
                 )
             )
-            share(this, text)
-            true
+            share(v.context, text)
         }
     }
 

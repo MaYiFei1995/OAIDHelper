@@ -20,7 +20,7 @@ repositories {
 ### 增加依赖
 ```groovy
 rependencies {
-    implementation 'com.github.MaYiFei1995:OAIDHelper:1.3.0'
+    implementation 'com.github.MaYiFei1995:OAIDHelper:1.4.0'
 }
 ```
 
@@ -64,7 +64,14 @@ public class OAIDHelper {
      */
     @Nullable
     public String getOaid();
-
+    
+    /**
+     * 是否已初始化
+     */
+    public boolean isInit() {
+        return this.isInit;
+    }
+    
 }
 ```
 

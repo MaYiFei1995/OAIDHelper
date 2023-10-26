@@ -49,6 +49,9 @@ public class OAIDHelper {
      */
     public void init(@NonNull Application application, @Nullable InitListener initListener) {
         if (isInit) {
+            if (initListener != null) {
+                initListener.onSuccess(this.oaid);
+            }
             return;
         }
         this.context = application;
@@ -99,6 +102,13 @@ public class OAIDHelper {
     @Nullable
     public String getOaid() {
         return this.oaid;
+    }
+
+    /**
+     * 是否已初始化
+     */
+    public boolean isInit() {
+        return this.isInit;
     }
 
     private void tryGetOAID() {
