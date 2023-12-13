@@ -15,6 +15,7 @@ import com.mai.oaid.helper.system.device.CooseaDevice;
 import com.mai.oaid.helper.system.device.FreemeDevice;
 import com.mai.oaid.helper.system.device.GmsDevice;
 import com.mai.oaid.helper.system.device.HWDevice;
+import com.mai.oaid.helper.system.device.HonorDevice;
 import com.mai.oaid.helper.system.device.LenovoDevice;
 import com.mai.oaid.helper.system.device.MSADevice;
 import com.mai.oaid.helper.system.device.MeizuDevice;
@@ -80,6 +81,9 @@ public class OAIDSystemHelper {
         } else if (RomUtil.isHW(manufacturer, brand)) {
             // 华为、EMUI
             ret = new HWDevice(context);
+        } else if (RomUtil.isHonor(brand)) {
+            // 荣耀
+            ret = new HonorDevice(context);
         } else if (RomUtil.isLenovo(manufacturer, brand)) {
             // 联想、乐檬、ZUI、摩托罗拉
             ret = new LenovoDevice(context);

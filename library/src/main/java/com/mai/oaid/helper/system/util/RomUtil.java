@@ -65,9 +65,14 @@ public class RomUtil {
      * 华为、EMUI
      */
     public static boolean isHW(String manufacturer, String brand) {
-        return manufacturer.equals("HUAWEI") || brand.equals("HUAWEI") || brand.equals("HONOR")
+        return manufacturer.equals("HUAWEI") || brand.equals("HUAWEI")
                 // 其他设备刷了EMUI
                 || StringUtil.isNotEmpty(sysProperty("ro.build.version.emui", ""));
+    }
+
+    public static boolean isHonor(String brand) {
+        // 荣耀手机
+        return brand.equals("HONOR");
     }
 
     /**

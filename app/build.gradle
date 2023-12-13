@@ -10,8 +10,8 @@ android {
         applicationId "com.mai.oaidhelper"
         minSdk 21
         targetSdk 32
-        versionCode 4
-        versionName "1.4"
+        versionCode 5
+        versionName "1.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,5 +44,5 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation 'com.github.MaYiFei1995:OAIDHelper:1.4.0'
+    implementation 'com.github.MaYiFei1995:OAIDHelper:1.5.0'
 }

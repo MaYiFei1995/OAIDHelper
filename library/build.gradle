@@ -30,6 +30,8 @@ dependencies {
     implementation 'com.google.android.material:material:1.4.0'
 
     compileOnly files('./libs/oaid_sdk_1.0.25.aar')
+    implementation "com.huawei.hms:ads-identifier:3.4.62.300"
+    implementation "com.hihonor.mcs:ads-identifier:1.0.2.301"
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
